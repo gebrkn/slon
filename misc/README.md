@@ -2,8 +2,7 @@
 
 `slon` is Simple Lightweight Object Notation. Like `json`, but with less punctuation and some smart features.
 
-###### slon:
-```
+```EXAMPLE
 // slon example
 
 {
@@ -37,43 +36,9 @@
     ]
 }
 ```
-###### json:
-```
-{
-    "name": "Shakespeare",
-    "firstName": "William",
-    "bio": "William Shakespeare was an English poet, playwright, and actor, widely regarded as the greatest writer in the English language and the world's greatest dramatist",
-    "books": [
-        {
-            "title": "Hamlet",
-            "price": 12.34,
-            "onSale": true
-        },
-        {
-            "title": "King Lear",
-            "price": 42.99,
-            "onSale": false
-        }
-    ]
-}
-```
 
 
- * [layout](#layout)
- * [values](#values)
-     * [null](#null)
-     * [numbers](#numbers)
-     * [booleans](#booleans)
-     * [strings](#strings)
-         * [one quote, single line](#one-quote,-single-line)
-         * [one quote, multiline](#one-quote,-multiline)
-         * [triple quotes](#triple-quotes)
-         * [bare strings](#bare-strings)
-     * [arrays](#arrays)
-     * [objects](#objects)
-         * [structured keys](#structured-keys)
- * [python api](#python-api)
- * [info](#info)
+{toc}
 
 
 ## layout
@@ -81,8 +46,7 @@
 First off, `slon` is a superset of `json`, that is, every valid `json` is also valid `slon`. Like in `json`, whitespace and indentation don't matter. Comments are line comments with `#` or `//` and C-style blocks `/* ... */`
 
 
-###### slon:
-```
+```EXAMPLE
 # sample data
 
 /*
@@ -93,14 +57,7 @@ First off, `slon` is a superset of `json`, that is, every valid `json` is also v
 {
     authName Shakespeare // author's name
     bYear    1564        // year of birth
-}
-```
-###### json:
-```
-{
-    "authName": "Shakespeare",
-    "bYear": 1564
-}
+}  
 ```
 
 ## values 
@@ -111,12 +68,7 @@ First off, `slon` is a superset of `json`, that is, every valid `json` is also v
 
 A `null` is just `null`:
 
-###### slon:
-```
-null
-```
-###### json:
-```
+```EXAMPLE
 null
 ```
 
@@ -124,8 +76,7 @@ null
 
 Numbers are standard integers and floats. The format is less strict than `json` though, so you can have a leading `+` or zero. Hexadecimal numbers are supported. An underscore can be used to delimit long numbers:
 
-###### slon:
-```
+```EXAMPLE
 [
     123
     123_456_789
@@ -134,39 +85,18 @@ Numbers are standard integers and floats. The format is less strict than `json` 
     0xcafe
 ]
 ```
-###### json:
-```
-[
-    123,
-    123456789,
-    45.99,
-    -123000.0,
-    51966
-]
-```
 
 ### booleans
 
 Boolean literals are `true`, `on`, `yes` or `y` for "true", `false`, `off`, `no` and `n` for "false", case-insensitive.
 
-###### slon:
-```
+```EXAMPLE
 {
     select true
     update YES
     insert ON
     delete no
     create Off
-}
-```
-###### json:
-```
-{
-    "select": true,
-    "update": true,
-    "insert": true,
-    "delete": false,
-    "create": false
 }
 ```
 
@@ -176,32 +106,21 @@ Strings are surrounded by double and single quotes or triple-quotes. Double-quot
 
 #### one quote, single line
 
-###### slon:
-```
+```EXAMPLE
 "\u00a9 me, 2019. \n bravo \U0001F44F"
-```
-###### json:
-```
-"© me, 2019. \n bravo 👏"
 ```
 
 No escaping in single-quoted strings:
 
-###### slon:
-```
+```EXAMPLE
 '\u00a9 me, 2019. \n bravo \U0001F44F'
-```
-###### json:
-```
-"\\u00a9 me, 2019. \\n bravo \\U0001F44F"
 ```
 
 #### one quote, multiline
 
 If a double- or single-quoted string contains newlines, all whitespace within it is replaced with a single space:
 
-###### slon:
-```
+```EXAMPLE
 "
       The 
     Comedy 
@@ -209,17 +128,12 @@ If a double- or single-quoted string contains newlines, all whitespace within it
     Errors 
 "
 ```
-###### json:
-```
-"The Comedy of Errors"
-```
 
 #### triple quotes
 
 Newlines in triple-quoted strings are preserved and the string is dedented to the minmal indent:
 
-###### slon:
-```
+```EXAMPLE
 """
             Scene I.        
 
@@ -229,47 +143,24 @@ Newlines in triple-quoted strings are preserved and the string is dedented to th
             Nay, answer me: stand, and unfold yourself.
 """
 ```
-###### json:
-```
-"    Scene I.\n\nBERNARDO\n    Who's there?\nFRANCISCO\n    Nay, answer me: stand, and unfold yourself."
-```
 
 #### bare strings
 
 Any sequence of symbols except whitespace, punctuation and numbers/bools is considered a string, so you can write "simple" strings without any quotes at all: 
 
-###### slon:
-```
+```EXAMPLE
 hello
-```
-###### json:
-```
-"hello"
 ```
 
 ### arrays
 
 An array (aka list) is a sequence of values separated by whitespace and/or commas, enclosed in `[...]`:
  
-###### slon:
-```
+```EXAMPLE
 [
     Shakespeare, William 
     "The Tragedy of Hamlet" 
         [2017,2018,2019]
-]
-```
-###### json:
-```
-[
-    "Shakespeare",
-    "William",
-    "The Tragedy of Hamlet",
-    [
-        2017,
-        2018,
-        2019
-    ]
 ]
 ```
 
@@ -277,8 +168,7 @@ An array (aka list) is a sequence of values separated by whitespace and/or comma
 
 An object (aka struct, dict) is a sequence of key-value pairs, separated by whitespace and/or commas and enclosed in `{...}`. Keys and values are separated by whitespace and/or colons or equal signs. Keys can be quoted and bare strings, integers or booleans:
  
-###### slon:
-```
+```EXAMPLE
 {
     author Shakespeare
     "full title":"The Tragedy of Hamlet"
@@ -290,26 +180,12 @@ An object (aka struct, dict) is a sequence of key-value pairs, separated by whit
     year 1599
 }
 ```
-###### json:
-```
-{
-    "author": "Shakespeare",
-    "full title": "The Tragedy of Hamlet",
-    "seasons": {
-        "2017": true,
-        "2018": false,
-        "2019": true
-    },
-    "year": 1599
-}
-```
 
 #### structured keys
 
 A "bare" key can contain dots, in which case `slon` resolves all intermediate objects or arrays and creates them on the fly if needed:
 
-###### slon:
-```
+```EXAMPLE
 {
     author Shakespeare
     title  Hamlet
@@ -326,36 +202,10 @@ A "bare" key can contain dots, in which case `slon` resolves all intermediate ob
     readers.2.name Bob
 }
 ```
-###### json:
-```
-{
-    "author": "Shakespeare",
-    "title": "Hamlet",
-    "price": {
-        "normal": 12.34,
-        "sale": 5.67,
-        "special": {
-            "christmas": 8.99
-        }
-    },
-    "readers": [
-        {
-            "name": "Joe"
-        },
-        {
-            "name": "Lily"
-        },
-        {
-            "name": "Bob"
-        }
-    ]
-}
-```
 
 A `+` before a key means "append to that array": 
 
-###### slon:
-```
+```EXAMPLE
 {
     author Shakespeare
     title Hamlet
@@ -366,36 +216,11 @@ A `+` before a key means "append to that array":
     
 }
 ```
-###### json:
-```
-{
-    "author": "Shakespeare",
-    "title": "Hamlet",
-    "readers": [
-        {
-            "name": "Joe"
-        },
-        {
-            "name": "Lily"
-        },
-        {
-            "name": "Bob"
-        }
-    ]
-}
-```
 
 If you need a literal dot/plus sign in a key, quote it:
-###### slon:
-```
+```EXAMPLE
 {
     "com.sun.java" installed
-}
-```
-###### json:
-```
-{
-    "com.sun.java": "installed"
 }
 ```
 
