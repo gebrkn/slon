@@ -6,7 +6,7 @@ def test_object_basic():
         {
             abc def
             123 456
-            foo y
+            foo yes
             z null
         }
     """)
@@ -54,9 +54,9 @@ def test_object_refs():
 def test_object_refs_array_add():
     s = u.loads(r"""
         {
-            +abc 1
-            +abc 22
-            +abc 333
+            abc+ 1
+            abc+ 22
+            abc+ 333
         }
     """)
     assert s == {'abc': [1, 22, 333]}
@@ -65,9 +65,9 @@ def test_object_refs_array_add():
 def test_object_refs_array_add_nested_1():
     s = u.loads(r"""
         {
-            +abc.x 1
-            +abc.y 22
-            +abc.z 333
+            abc+.x 1
+            abc+.y 22
+            abc+.z 333
         }
     """)
     assert s == {'abc': [{'x': 1}, {'y': 22}, {'z': 333}]}
@@ -76,9 +76,9 @@ def test_object_refs_array_add_nested_1():
 def test_object_refs_array_add_nested_2():
     s = u.loads(r"""
         {
-            abc.+x 1
-            abc.+x 22
-            abc.+x 333
+            abc.x+ 1
+            abc.x+ 22
+            abc.x+ 333
         }
     """)
     assert s == {'abc': {'x': [1, 22, 333]}}

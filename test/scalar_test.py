@@ -7,8 +7,6 @@ def test_null():
 
 
 def test_bool():
-    s = u.loads('y')
-    assert s == True
 
     s = u.loads('yes')
     assert s == True
@@ -18,9 +16,6 @@ def test_bool():
 
     s = u.loads('ON')
     assert s == True
-
-    s = u.loads('n')
-    assert s == False
 
     s = u.loads('no')
     assert s == False

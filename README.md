@@ -20,18 +20,18 @@
         {
             title Hamlet
             price 12.34
-            onSale Y
+            onSale yes
         }
         {
             title "King Lear"
             price 42.99
-            onSale N
+            onSale no
         }
         /* removed for now
         {
             title "The Comedy of Errors"
             price 34.11
-            onSale N
+            onSale no
         }
         */
     ]
@@ -147,7 +147,7 @@ Numbers are standard integers and floats. The format is less strict than `json` 
 
 ### booleans
 
-Boolean literals are `true`, `on`, `yes` or `y` for "true", `false`, `off`, `no` and `n` for "false", case-insensitive.
+Boolean literals are `true`, `on`, `yes` for "true", `false`, `off`, `no` for "false", case-insensitive.
 
 ###### slon:
 ```
@@ -178,22 +178,22 @@ Strings are surrounded by double and single quotes or triple-quotes. Double-quot
 
 ###### slon:
 ```
-"\u00a9 me, 2019. \n bravo \U0001F44F"
+"Hamlet \u00a9 William, 1599. bravo \U0001F44F \U0001F44F"
 ```
 ###### json:
 ```
-"© me, 2019. \n bravo 👏"
+"Hamlet © William, 1599. bravo 👏 👏"
 ```
 
 No escaping in single-quoted strings:
 
 ###### slon:
 ```
-'\u00a9 me, 2019. \n bravo \U0001F44F'
+'Hamlet \u00a9 William, 1599. bravo \U0001F44F \U0001F44F'
 ```
 ###### json:
 ```
-"\\u00a9 me, 2019. \\n bravo \\U0001F44F"
+"Hamlet \\u00a9 William, 1599. bravo \\U0001F44F \\U0001F44F"
 ```
 
 #### one quote, multiline
@@ -352,7 +352,7 @@ A "bare" key can contain dots, in which case `slon` resolves all intermediate ob
 }
 ```
 
-A `+` before a key means "append to that array": 
+A `+` after a key means "append to that array":
 
 ###### slon:
 ```
@@ -360,9 +360,9 @@ A `+` before a key means "append to that array":
     author Shakespeare
     title Hamlet
 
-    +readers { name Joe }
-    +readers { name Lily }
-    +readers { name Bob }
+    readers+ { name Joe }
+    readers+ { name Lily }
+    readers+ { name Bob }
     
 }
 ```
