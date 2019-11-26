@@ -9,11 +9,11 @@
     name Shakespeare
     firstName William
     
-    bio "
+    bio """
         William Shakespeare was an English poet, playwright, and actor, 
         widely regarded as the greatest writer in the English language 
         and the world's greatest dramatist    
-    "
+    """
     
     books [
         {
@@ -104,7 +104,7 @@ Boolean literals are `true`, `on`, `yes` for "true", `false`, `off`, `no` for "f
 
 Strings are surrounded by double and single quotes or triple-quotes. Double-quoted strings use the standard `json` escaping and "long" unicode escapes `\UXXXXXXXX`. Single-quoted strings are verbatim.  
 
-#### one quote, single line
+#### one quote, single line strings
 
 ```EXAMPLE
 "Hamlet \u00a9 William, 1599. bravo \U0001F44F \U0001F44F"
@@ -116,22 +116,9 @@ No escaping in single-quoted strings:
 'Hamlet \u00a9 William, 1599. bravo \U0001F44F \U0001F44F'
 ```
 
-#### one quote, multiline
+#### triple quotes, multiline strings
 
-If a double- or single-quoted string contains newlines, all whitespace within it is replaced with a single space:
-
-```EXAMPLE
-"
-      The 
-    Comedy 
-      of 
-    Errors 
-"
-```
-
-#### triple quotes
-
-Newlines in triple-quoted strings are preserved and the string is dedented to the minmal indent:
+Triple-quoted strings can contain newlines. If a character right after the opening triple quote is a space or a new line, newlines in the string are preserved, and the string is dedented to the minmal indent:
 
 ```EXAMPLE
 """
@@ -143,6 +130,18 @@ Newlines in triple-quoted strings are preserved and the string is dedented to th
             Nay, answer me: stand, and unfold yourself.
 """
 ```
+
+If a character right after the opening quote is not a whitespace, all whitespace in the string is replaced with a single space:
+
+```EXAMPLE
+"""You are welcome, masters; welcome, all. I am glad
+to see thee well. Welcome, good friends. O, my old
+friend! thy face is valenced since I saw thee last:
+comest thou to beard me in Denmark?
+"""
+```
+
+
 
 #### bare strings
 

@@ -73,13 +73,11 @@ def test_literal_string_as_is():
 
 def test_literal_string_remove_ws():
     s = u.loads(r"""
-        '
-        
-            a
+        '''a
                 b
                     c
         
-        '
+        '''
     """)
     assert s == 'a b c'
 
@@ -110,15 +108,13 @@ def test_rich_string_as_is():
 
 
 def test_rich_string_remove_ws():
-    s = u.loads(r"""
-        "
-        
-            a
+    s = u.loads(r'''
+        """a
                 b
                     c
         
-        "
-    """)
+        """
+    ''')
     assert s == 'a b c'
 
 
@@ -134,16 +130,15 @@ def test_rich_string_dedent():
 
 
 def test_rich_string_escapes():
-    s = u.loads(r"""
-        "
-            latin=ABC,
+    s = u.loads(r'''
+        """latin=ABC,
             unicode=ГДЭ,
             esc=\", \\, \/, \b, \f, \r, \t, \n, 
             unicode=\u1234,
             surrogate=\ud83d\ude00,
             long=\U0001f620,
-        "
-    """)
+        """
+    ''')
     assert s == 'latin=ABC, unicode=ГДЭ, esc=", \\, /, \b, \f, \r, \t, \n, unicode=\u1234, surrogate=\U0001f600, long=\U0001f620,'
 
 

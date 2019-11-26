@@ -6,7 +6,7 @@ def test_invalid_token():
             "'aa\n"
             "123' }"
         )
-    assert e.value.args == (u.err.INVALID_TOKEN, 2, 6)
+    assert e.value.args == (u.err.INVALID_TOKEN, 1, 1)
 
 
 def test_premature_eof():

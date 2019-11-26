@@ -26,9 +26,8 @@ def test_array_mixed_types():
     s = u.loads(r"""
         [
             'abc',
-            '
-                def
-            ',
+            '''def
+            ''',
             on,
             123,
             { foo bar }
