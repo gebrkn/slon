@@ -1,0 +1,25 @@
+{
+    "name": "slonjs",
+    "version": "0.2.2",
+    "author": {
+        "name": "Georg Barikin",
+        "email": "georg@merribithouse.net"
+    },
+    "description": "Simple Lightweight Object Notation",
+    "keywords": [
+        "json",
+        "notation",
+        "literal",
+        "parse"
+    ],
+    "files": [
+        "index.js"
+    ],
+    "homepage": "https://github.com/gebrkn/slon",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/gebrkn/slon.git"
+    },
+    "main": "index.js",
+    "license": "MIT"
+}

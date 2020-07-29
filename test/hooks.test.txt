@@ -1,0 +1,77 @@
+TEST
+======================
+upper("hello")
+======================
+"HELLO"
+
+TEST hooks called after escapes
+======================
+upper("\x61")
+======================
+"A"
+
+TEST whitespace in call
+======================
+upper(
+
+'abc' # comment
+
+
+)
+======================
+"ABC"
+
+TEST nested calls
+======================
+upper(addX('abc'))
+======================
+"ABCX"
+
+TEST nested calls + whitespace
+======================
+upper(/* comment */addX(
+
+'abc'
+
+) // ??
+)
+======================
+"ABCX"
+
+TEST
+======================
+{
+    x upper('bar')
+    y upper("""
+        a
+        b
+        c
+    """)
+    z add5(25)
+}
+======================
+{"x": "BAR", "y": "A\u{a}B\u{a}C", "z": 30}
+
+TEST keys with hooks
+======================
+{
+    upper(xyz) upper('bar')
+}
+======================
+{"XYZ": "BAR"}
+
+TEST
+======================
+{
+1 a45('89'
+}
+======================
+ERROR:UNTERMINATED_CALL:3:1:2:6
+
+TEST
+======================
+{
+1 a45('89')
+}
+======================
+ERROR:INVALID_HOOK:2:3:2:3

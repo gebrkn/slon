@@ -5,7 +5,7 @@ import json
 
 DIR = os.path.dirname(__file__)
 
-sys.path.insert(0, DIR + '/../slon')
+sys.path.insert(0, DIR + '/../py')
 
 import slon
 

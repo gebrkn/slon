@@ -1,0 +1,251 @@
+TEST simple single
+======================
+'abcd'
+======================
+"abcd"
+
+TEST simple single with unicode
+======================
+"ab ß 😍!"
+======================
+"ab \u{df} \u{1f60d}!"
+
+TEST single doesnt parse escapes
+======================
+'a\n b\t c\u1234 \invalid'
+======================
+"a\n b\t c\u1234 \invalid"
+
+TEST single unterminated
+======================
+'abc
+======================
+ERROR:UNTERMINATED_STRING:1:5:1:1
+
+TEST single multiline compressed
+======================
+'''012
+        345
+                678
+
+
+
+'''
+======================
+"012 345 678"
+
+TEST single multiline dedented
+======================
+'''
+        012
+    345
+            678
+        900
+'''
+======================
+"    012\u{a}345\u{a}        678\u{a}    900"
+
+TEST single multiline unterminated
+======================
+'''
+abc
+======================
+ERROR:UNTERMINATED_STRING:3:1:1:1
+
+TEST double simple
+======================
+"abcd"
+======================
+"abcd"
+
+TEST double with escapes
+======================
+"spec=\' \" \0 \/ \\ \b \f \n \r \t x=\xA2 u1=\u12ab u2=\u{345bc} u3=\U000456CD end"
+======================
+"spec=' " \u{0} / \ \u{8} \u{c} \u{a} \u{d} \u{9} x=\u{a2} u1=\u{12ab} u2=\u{345bc} u3=\u{456cd} end"
+
+TEST double with surrogate escapes
+======================
+"valid=\uD83D\uDE20 invalid=\uD83D\uFE20 invalid2=\uF83D\uDE20 nonseq=\uD83D \uDE20 lonehigh=\uD83D lonelow=\uDE20"
+======================
+"valid=\u{1f620} invalid=\u{d83d}\u{fe20} invalid2=\u{f83d}\u{de20} nonseq=\u{d83d} \u{de20} lonehigh=\u{d83d} lonelow=\u{de20}"
+
+TEST single unterminated
+======================
+"abc
+======================
+ERROR:UNTERMINATED_STRING:1:5:1:1
+
+TEST double multiline, with escapes
+======================
+"""123
+        456
+            \u1234
+                789
+                    \U00012345
+                        901
+                            \uD83D\uDE20
+                                234
+"""
+======================
+"123 456 \u{1234} 789 \u{12345} 901 \u{1f620} 234"
+
+TEST double multiline, with escapes
+======================
+`123
+        456
+            \u1234
+                789
+                    \U00012345
+                        901
+                            \uD83D\uDE20
+                                234
+`
+======================
+"123 456 \u{1234} 789 \u{12345} 901 \u{1f620} 234"
+
+TEST double multiline compressed, with whitespace escapes
+======================
+"""0123
+    456\n\n\n
+    \t\t\t789
+
+
+"""
+======================
+"0123 456\u{a}\u{a}\u{a} \u{9}\u{9}\u{9}789"
+
+TEST double multiline dedented, with whitespace escapes
+======================
+"""
+        0123
+    456\n
+    \t789
+            012
+
+"""
+======================
+"    0123\u{a}456\u{a}\u{a}\u{9}789\u{a}        012\u{a}"
+
+TEST double multiline, unterminated
+======================
+"""123
+        456
+======================
+ERROR:UNTERMINATED_STRING:3:1:1:1
+
+TEST double multiline, error position
+======================
+"""123
+        456
+
+1234\z
+"""
+======================
+ERROR:INVALID_ESCAPE_SEQUENCE:4:5:4:5
+
+TEST unquoted
+======================
+[
+    abc
+    abc14
+    @1
+    @1-2-3
+    $456
+]
+======================
+["abc", "abc14", "@1", "@1-2-3", "$456"]
+
+## empty
+
+TEST
+======================
+''
+======================
+""
+
+TEST
+======================
+""
+======================
+""
+
+TEST
+======================
+''''''
+======================
+""
+
+TEST
+======================
+""""""
+======================
+""
+
+TEST
+======================
+``
+======================
+""
+
+## invalid escapes
+
+TEST
+======================
+"234\w"
+======================
+ERROR:INVALID_ESCAPE_SEQUENCE:1:5:1:5
+
+TEST
+======================
+"234\xWOW"
+======================
+ERROR:INVALID_ESCAPE_SEQUENCE:1:5:1:5
+
+TEST
+======================
+"234\xaWOW"
+======================
+ERROR:INVALID_ESCAPE_SEQUENCE:1:5:1:5
+
+TEST
+======================
+"234\uabcWOW"
+======================
+ERROR:INVALID_ESCAPE_SEQUENCE:1:5:1:5
+
+TEST
+======================
+"234\u{WOW}"
+======================
+ERROR:INVALID_ESCAPE_SEQUENCE:1:5:1:5
+
+TEST
+======================
+"234\u{}"
+======================
+ERROR:INVALID_ESCAPE_SEQUENCE:1:5:1:5
+
+TEST
+======================
+"234\u{123 x"
+======================
+ERROR:INVALID_ESCAPE_SEQUENCE:1:5:1:5
+
+TEST
+======================
+"234\U123456WOW"
+======================
+ERROR:INVALID_ESCAPE_SEQUENCE:1:5:1:5
+
+TEST
+======================
+"234\u{110000FF}"
+======================
+ERROR:INVALID_ESCAPE_SEQUENCE:1:5:1:5
+
+TEST
+======================
+"234\U110000FF"
+======================
+ERROR:INVALID_ESCAPE_SEQUENCE:1:5:1:5

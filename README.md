@@ -8,41 +8,39 @@
 
 {
     name Shakespeare
-    firstName William
-    
-    bio """
+    first_name William
+
+    about """
         William Shakespeare was an English poet, playwright, and actor, 
         widely regarded as the greatest writer in the English language 
-        and the world's greatest dramatist    
+        and the world's greatest dramatist (Wikipedia)
     """
     
     books [
-        {
-            title Hamlet
-            price 12.34
-            onSale yes
-        }
-        {
-            title "King Lear"
-            price 42.99
-            onSale no
-        }
-        /* removed for now
-        {
-            title "The Comedy of Errors"
-            price 34.11
-            onSale no
-        }
+        {  title Hamlet    price 12.34    onSale true }
+        {  title Macbeth   price 42.99    onSale false  }
+
+        /* sold out
+        { title "The Comedy of Errors" price 34.11 onSale no }
         */
     ]
+
+    locations {
+        Africa.Egypt.Alexandria Antony
+        Europe.Greece.Athens Timon
+        Europe.Italy.Venice  Othello
+        Europe.Italy.Verona  Romeo
+    }
+
+    readers [Alice Bob Carol]
 }
 ```
 ###### json:
 ```
 {
     "name": "Shakespeare",
-    "firstName": "William",
-    "bio": "William Shakespeare was an English poet, playwright, and actor,\nwidely regarded as the greatest writer in the English language\nand the world's greatest dramatist",
+    "first_name": "William",
+    "about": "William Shakespeare was an English poet, playwright, and actor,\nwidely regarded as the greatest writer in the English language\nand the world's greatest dramatist (Wikipedia)",
     "books": [
         {
             "title": "Hamlet",
@@ -50,14 +48,34 @@
             "onSale": true
         },
         {
-            "title": "King Lear",
+            "title": "Macbeth",
             "price": 42.99,
             "onSale": false
         }
+    ],
+    "locations": {
+        "Africa": {
+            "Egypt": {
+                "Alexandria": "Antony"
+            }
+        },
+        "Europe": {
+            "Greece": {
+                "Athens": "Timon"
+            },
+            "Italy": {
+                "Venice": "Othello",
+                "Verona": "Romeo"
+            }
+        }
+    },
+    "readers": [
+        "Alice",
+        "Bob",
+        "Carol"
     ]
 }
 ```
-
 
  * [layout](#layout)
  * [values](#values)
@@ -65,19 +83,25 @@
      * [numbers](#numbers)
      * [booleans](#booleans)
      * [strings](#strings)
-         * [one quote, single line strings](#one-quote,-single-line-strings)
-         * [triple quotes, multiline strings](#triple-quotes,-multiline-strings)
+         * [plain strings](#plain-strings)
+         * [multiline strings](#multiline-strings)
          * [bare strings](#bare-strings)
      * [arrays](#arrays)
      * [objects](#objects)
-         * [structured keys](#structured-keys)
- * [python api](#python-api)
+ * [advanced usage](#advanced-usage)
+     * [structured keys](#structured-keys)
+     * [hooks](#hooks)
+ * [APIs](#apis)
+     * [python](#python)
+     * [javascript](#javascript)
  * [info](#info)
 
 
 ## layout
 
-First off, `slon` is a superset of `json`, that is, every valid `json` is also valid `slon`. Like in `json`, whitespace and indentation don't matter. Comments are line comments with `#` or `//` and C-style blocks `/* ... */`
+`slon` is a superset of `json`, that is, every valid `json` is also valid `slon`. Indentation is ignored, except within multiline strings. Array and object delimiters (commas/colons) are optional, object keys don't have to be quoted.
+
+`slon` supports line comments with `#` or `//` and C-style comment blocks `/* ... */`
 
 
 ###### slon:
@@ -90,38 +114,57 @@ First off, `slon` is a superset of `json`, that is, every valid `json` is also v
 */
 
 {
-    authName Shakespeare // author's name
-    bYear    1564        // year of birth
+    name Shakespeare // author's name
+    year 1564        // year of birth
+
+    books [Hamlet Macbeth Othello]
+
+    Alice: true,
+    Bob: true,
+    Carol: true,
 }
 ```
 ###### json:
 ```
 {
-    "authName": "Shakespeare",
-    "bYear": 1564
+    "name": "Shakespeare",
+    "year": 1564,
+    "books": [
+        "Hamlet",
+        "Macbeth",
+        "Othello"
+    ],
+    "Alice": true,
+    "Bob": true,
+    "Carol": true
 }
 ```
 
-## values 
+## values
 
-`slon` can encode nulls, numbers, booleans, strings, arrays and objects.
+Out of the box, `slon` can encode nulls, numbers, booleans, strings, arrays and objects.
 
 ### null
 
-A `null` is just `null`:
+A `null` value is `null` or `none`, case-insensitive:
 
 ###### slon:
 ```
-null
+[ null NULL None none ]
 ```
 ###### json:
 ```
-null
+[
+    null,
+    null,
+    null,
+    null
+]
 ```
 
 ### numbers
 
-Numbers are standard integers and floats. The format is less strict than `json` though, so you can have a leading `+` or zero. Hexadecimal numbers are supported. An underscore can be used to delimit long numbers:
+`slon` supports decimal, hexadecimal, octal and binary integers and decimal floats in the standard notation. Unlike json, leading zeroes are allowed. A number can be preceded by a `-` or `+`. Underscores can be used to delimit long numbers.
 
 ###### slon:
 ```
@@ -131,6 +174,8 @@ Numbers are standard integers and floats. The format is less strict than `json` 
     +045.990
     -12.3e4
     0xcafe
+    0o755
+    0b1110011
 ]
 ```
 ###### json:
@@ -140,7 +185,9 @@ Numbers are standard integers and floats. The format is less strict than `json` 
     123456789,
     45.99,
     -123000.0,
-    51966
+    51966,
+    493,
+    115
 ]
 ```
 
@@ -171,33 +218,60 @@ Boolean literals are `true`, `on`, `yes` for "true", `false`, `off`, `no` for "f
 
 ### strings
 
-Strings are surrounded by double and single quotes or triple-quotes. Double-quoted strings use the standard `json` escaping and "long" unicode escapes `\UXXXXXXXX`. Single-quoted strings are verbatim.  
+#### plain strings
 
-#### one quote, single line strings
+Plain strings are enclosed in single or double quotes and cannot contain a literal newline.
 
-###### slon:
-```
-"Hamlet \u00a9 William, 1599. bravo \U0001F44F \U0001F44F"
-```
-###### json:
-```
-"Hamlet © William, 1599. bravo 👏 👏"
-```
-
-No escaping in single-quoted strings:
+Single quoted strings are verbatim, that is, every symbol is interpreted exactly as written.
 
 ###### slon:
 ```
-'Hamlet \u00a9 William, 1599. bravo \U0001F44F \U0001F44F'
+'Hamlet \xa9 William, 1599. \n bravo \U0001F44F \u{1f44f}'
 ```
 ###### json:
 ```
-"Hamlet \\u00a9 William, 1599. bravo \\U0001F44F \\U0001F44F"
+"Hamlet \\xa9 William, 1599. \\n bravo \\U0001F44F \\u{1f44f}"
 ```
 
-#### triple quotes, multiline strings
+Double quoted strings interpret these escape sequences:
 
-Triple-quoted strings can contain newlines. If a character right after the opening triple quote is a space or a new line, newlines in the string are preserved, and the string is dedented to the minmal indent:
+```
+\n  \r  \t  \b  \f  \\  \"  \'  \/  \\  \0
+```
+
+and unicode escapes in these formats:
+
+```
+\x12  \u1234  \u{12345}  \U00012345
+```
+
+###### slon:
+```
+"Hamlet \xa9 William, 1599. \n bravo \U0001F44F \u{1f44f}"
+```
+###### json:
+```
+"Hamlet © William, 1599. \n bravo 👏 👏"
+```
+
+`slon` decodes valid unicode surrogate pairs into plane 1 characters:
+
+###### slon:
+```
+"smile \ud83d\ude03"
+```
+###### json:
+```
+"smile 😃"
+```
+
+`slon` doesn't allow unicode escapes greater than `\u{10FFFF}`, but otherwise makes no attempt to validate unicode. Particularly, invalid surrogate pairs and non-characters are left as is.
+
+#### multiline strings
+
+Strings enclosed in triple quotes (`'''` or `"""`) or backticks can span across multiple lines.
+
+If a character right after opening quotes is a space or a newline, newlines in the string are preserved, and the string is dedented to its minimal indent:
 
 ###### slon:
 ```
@@ -215,46 +289,72 @@ Triple-quoted strings can contain newlines. If a character right after the openi
 "    Scene I.\n\nBERNARDO\n    Who's there?\nFRANCISCO\n    Nay, answer me: stand, and unfold yourself."
 ```
 
-If a character right after the opening quote is not a whitespace, all whitespace in the string is replaced with a single space:
+Otherwise, the string is "compressed", so that all whitespace sequences are reduced to a single space character:
 
 ###### slon:
 ```
-"""You are welcome, masters; welcome, all. I am glad
-to see thee well. Welcome, good friends. O, my old
-friend! thy face is valenced since I saw thee last:
-comest thou to beard me in Denmark?
+"""You are welcome, masters;
+welcome, all.
+
+I am glad
+to see thee well.
 """
 ```
 ###### json:
 ```
-"You are welcome, masters; welcome, all. I am glad to see thee well. Welcome, good friends. O, my old friend! thy face is valenced since I saw thee last: comest thou to beard me in Denmark?"
+"You are welcome, masters; welcome, all. I am glad to see thee well."
 ```
 
-
-
-#### bare strings
-
-Any sequence of symbols except whitespace, punctuation and numbers/bools is considered a string, so you can write "simple" strings without any quotes at all: 
+`'''` strings are verbatim, `"""` and backtick strings interpret the escape sequences. Note that escaped spaces or newlines are preserved when the string is dedented or compressed:
 
 ###### slon:
 ```
-hello
+`Enter a King\n
+and a Queen very lovingly;\n
+the Queen embracing him,\n
+and he her.`
 ```
 ###### json:
 ```
-"hello"
+"Enter a King\n and a Queen very lovingly;\n the Queen embracing him,\n and he her."
+```
+
+#### bare strings
+
+Any sequence of symbols except whitespaces, punctuation and numeric/bool literals is considered a string, so you can write "simple" strings without any quotes at all:
+
+###### slon:
+```
+[
+    Hamlet
+    claudius@elsinore.castle
+    $123.45
+]
+```
+###### json:
+```
+[
+    "Hamlet",
+    "claudius@elsinore.castle",
+    "$123.45"
+]
 ```
 
 ### arrays
 
-An array (aka list) is a sequence of values separated by whitespace and/or commas, enclosed in `[...]`:
+An array (aka list) is a sequence of values separated by commas or whitespaces, enclosed in `[...]`:
  
 ###### slon:
 ```
 [
-    Shakespeare, William 
+    Shakespeare
+    William
     "The Tragedy of Hamlet" 
-        [2017,2018,2019]
+    [
+        2017,
+        2018,
+        2019,
+    ]
 ]
 ```
 ###### json:
@@ -273,62 +373,66 @@ An array (aka list) is a sequence of values separated by whitespace and/or comma
 
 ### objects
 
-An object (aka struct, dict) is a sequence of key-value pairs, separated by whitespace and/or commas and enclosed in `{...}`. Keys and values are separated by whitespace and/or colons or equal signs. Keys can be quoted and bare strings, integers or booleans:
+An object (aka struct, dict) is a sequence of key-value pairs, separated by commas or whitespaces and enclosed in `{...}`. Keys and values are separated by colons or equal signs or whitespaces. Keys can be strings, integers or booleans:
  
 ###### slon:
 ```
 {
-    author Shakespeare
-    "full title":"The Tragedy of Hamlet"
+    author
+        Shakespeare
+    year
+        1599
+    "full title": 'The Tragedy of Hamlet'
     seasons {
-        2017=yes 
-        2018=no
-        2019=yes
+        2017 = yes
+        2018 = no
+        2019 = yes
     } 
-    year 1599
 }
 ```
 ###### json:
 ```
 {
     "author": "Shakespeare",
+    "year": 1599,
     "full title": "The Tragedy of Hamlet",
     "seasons": {
         "2017": true,
         "2018": false,
         "2019": true
-    },
-    "year": 1599
+    }
 }
 ```
 
-#### structured keys
+## advanced usage
 
-A "bare" key can contain dots, in which case `slon` resolves all intermediate objects or arrays and creates them on the fly if needed:
+### structured keys
+
+An object key which is a non-quoted ("bare") string can contain dots, in which case `slon` treats it as a structured ("nested") key and resolves intermediate objects or arrays, creating them on the fly if needed:
 
 ###### slon:
 ```
 {
-    author Shakespeare
-    title  Hamlet
+    title.short  Hamlet
     
     price { normal 12.34 }
-    
-    price.sale   
+
+    price.sale
         5.67
     price.special.christmas   
         8.99
-    
-    readers.0.name Joe
-    readers.1.name Lily
-    readers.2.name Bob
+
+    readers.0.name Alice
+    readers.1.name Bob
+    readers.2.name Carol
 }
 ```
 ###### json:
 ```
 {
-    "author": "Shakespeare",
-    "title": "Hamlet",
+    "title": {
+        "short": "Hamlet"
+    },
     "price": {
         "normal": 12.34,
         "sale": 5.67,
@@ -338,13 +442,13 @@ A "bare" key can contain dots, in which case `slon` resolves all intermediate ob
     },
     "readers": [
         {
-            "name": "Joe"
-        },
-        {
-            "name": "Lily"
+            "name": "Alice"
         },
         {
             "name": "Bob"
+        },
+        {
+            "name": "Carol"
         }
     ]
 }
@@ -358,10 +462,9 @@ A `+` after a key means "append to that array":
     author Shakespeare
     title Hamlet
 
-    readers+ { name Joe }
-    readers+ { name Lily }
+    readers+ { name Alice }
     readers+ { name Bob }
-    
+    readers+ { name Carol }
 }
 ```
 ###### json:
@@ -371,19 +474,20 @@ A `+` after a key means "append to that array":
     "title": "Hamlet",
     "readers": [
         {
-            "name": "Joe"
-        },
-        {
-            "name": "Lily"
+            "name": "Alice"
         },
         {
             "name": "Bob"
+        },
+        {
+            "name": "Carol"
         }
     ]
 }
 ```
 
-If you need a literal dot/plus sign in a key, quote it:
+If you need a literal dot in a key, quote it:
+
 ###### slon:
 ```
 {
@@ -397,29 +501,120 @@ If you need a literal dot/plus sign in a key, quote it:
 }
 ```
 
-## python api
 
-The `slon` module exposes a single function:
+### hooks
 
-```
-slon.loads(s: str, as_object=False, as_array=False) -> None|int|float|str|list|dict
-```
+A "bare" string immediately followed by an opening parenthesis `(` is treated as a function name ("hook"). A hook function receives one of the basic values  and can return whatever you see fit. `slon` parser accepts the `hooks` argument, which is an object or a dict containing hook functions (or methods).
 
-`as_object` and `as_array` put implicit `{...}` or `[...]` around the whole document.
+You can use hooks to add support for library types like dates or binary strings. For example, this `slon` file:
 
 ```
+// test.slon
 
-import slon
+{
+    title
+        Hamlet
+    created
+        date('1599-02-20')
+    image
+        bin("\x89PNG\r\n\x1a\n\0\0\0...")
+}
+```
 
+can be decoded with this code:
+
+```
+from datetime import date
+from functools import partial
+
+hooks = {
+    'date': date.fromisoformat,
+    'bin': partial(bytes, encoding='latin1'),
+}
+
+with open('test.slon') as fp:
+    result = slon.loads(fp.read(), hooks=hooks)
+
+print(result) ## {'title': 'Hamlet', 'created': datetime.date(1599, 2, 20), 'image': b'\x89PNG\r\n\x1a\n\x00\x00\x00...'}
+
+```
+
+## APIs
+
+### python
+
+```
+pip install slon
+```
+
+The `slon` module provides a single function:
+```
+slon.loads(text: str, as_object=False, as_array=False, hooks=None) -> Any
+```
+
+- `text` is a string (`str`) which contains encoded `slon`. Note that `bytes` inputs are not supported
+
+- `as_object` parses `text` as an object, that is, puts implicit `{...}` around it, unless `text` already starts with a `{`
+
+- `as_array` parses `text` as an array
+
+- `hooks` is a hooks dict or object
+
+
+Examples:
+
+```
 text = """
     author Shakespeare
     title Hamlet
 """
 
-dct = slon.loads(s, as_object=True)
+val = slon.loads(text, as_object=True)
 
-print(dct)  # {'author': 'Shakespeare', 'title': 'Hamlet'} 
+print(val)  # {'author': 'Shakespeare', 'title': 'Hamlet'}
+
+
+text = """
+    100
+    200
+    300
+"""
+
+val = slon.loads(text, as_array=True)
+
+print(val)  # [100, 200, 300]
 ```
+
+
+### javascript
+
+```
+npm install slonjs
+```
+
+The `slon` module provides a single function:
+
+```
+slon.parse(text: string, options: object) -> any
+```
+
+Options are `asObject`, `asArray` and `hooks`, with the same meaning as in python.
+
+
+```
+let slon = require('slon');
+
+text = `
+    author Shakespeare
+    title Hamlet
+`
+
+val = slon.parse(text, {asObject: true})
+
+console.log(val)  // {author: 'Shakespeare', title: 'Hamlet'}
+```
+
+For browsers, grab `index.js` and use `window.SLON.parse()`.
 
 
 
